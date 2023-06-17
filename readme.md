@@ -1,20 +1,22 @@
 # Terraform - Web Server ECS on AWS
 
-This terraform provides quick management and deployment of load-balanced web-servers running as an ECS cluster on AWS.
+This terraform provides quick management and deployment of load-balanced web-servers running as an ECS Fargate cluster on AWS.
 
 The terraform folder `/ECR-Registry` will setup an ECR Registry only. It can be safely left deployed at very little cost.
 
 The terraform folder `/ECS-Service` will deploy:
 
 - VPC with Subnets and Security Groups
-- ECS Cluster, ECS Task Definition and ECS Service
-- Load Balancer and Target Group.
+- ECS Cluster, ECS Task Definition and ECS Fargate Service
+- Load Balancer, Listener and Target Group
 
 There is a small hourly cost for running this, so it should be taken down when not needed.
 
-This project requires Docker and Terraform to be installed, and AWS credentials to be set.
+## Requirements
 
-## Setting up ECR
+This project requires Docker and Terraform to be installed, AWS credentials to be set, and a dockerized web project ready to go.
+
+## Setup ECR Container Registry
 
 `cd` into `/ECR-Registry` and check `variables.tf`. If any need to be overridden, create a `local.tfvars` file and place the overridden variables in there.
 
@@ -35,7 +37,7 @@ After creation, docker login, tag, push cmds will be provided as `terraform outp
 
 The ECR registry now stores your image and is ready to be pulled from by ECS.
 
-## Setting up ECS
+## Setup ECS Fargate Service
 
 `cd` into `/ECS-Service` and check `variables.tf` for anything that needs to be changed.
 Create a `local.tfvars` file and manually set the variable `ecr_repository_uri` to the output from ECR `ecr_repository_uri`.
@@ -48,6 +50,6 @@ terraform apply -var-file="local.tfvars"
 
 After the infrastructure has been created, the address for the Load Balancer will be ready to view via `terraform output`.
 
-## Cleaning up
+## Clean up
 
 `cd` into `/ECS-Service` run `terraform destroy` to destroy the infrastructure. Repeat the steps for the `/ECS-Registry` folder. Any images contained within ECR will also be deleted.
