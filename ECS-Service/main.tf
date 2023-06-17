@@ -27,8 +27,8 @@ resource "aws_ecs_task_definition" "task" {
       essential = true
       portMappings = [
         {
-          containerPort = 3000
-          hostPort      = 3000
+          containerPort = var.container_web_port
+          hostPort      = var.container_web_port
         }
       ]
     }
@@ -40,6 +40,7 @@ resource "aws_ecs_task_definition" "task" {
   execution_role_arn       = aws_iam_role.ecs-task-execution.arn
 }
 
+# ECS Service
 resource "aws_ecs_service" "app_service" {
   name            = "${var.project_name}-service"
   cluster         = aws_ecs_cluster.cluster.id
@@ -52,22 +53,25 @@ resource "aws_ecs_service" "app_service" {
   load_balancer {
     target_group_arn = aws_lb_target_group.web.arn
     container_name   = "${var.project_name}-task"
-    container_port   = 3000
+    container_port   = var.container_web_port
   }
 
   network_configuration {
-    subnets          = [aws_subnet.public[0].id, aws_subnet.public[1].id]
+    subnets          = [aws_subnet.public[0].id, aws_subnet.public[1].id] # todo fix array
     assign_public_ip = true
     security_groups  = [aws_security_group.web-server.id]
   }
 }
 
+# Application Load Balancer
 resource "aws_lb" "web" {
   name               = "${var.project_name}-load-balancer"
   load_balancer_type = "application"
   subnets            = [aws_subnet.public[0].id, aws_subnet.public[1].id]
   security_groups    = [aws_security_group.web-server.id]
 }
+
+# Load Balancer Target Group
 resource "aws_lb_target_group" "web" {
   name        = "${var.project_name}-target-group"
   port        = 80
@@ -75,6 +79,8 @@ resource "aws_lb_target_group" "web" {
   target_type = "ip"
   vpc_id      = aws_vpc.vpc.id
 }
+
+# Load Balancer Listener
 resource "aws_lb_listener" "listener" {
   load_balancer_arn = aws_lb.web.arn
   port              = "80"

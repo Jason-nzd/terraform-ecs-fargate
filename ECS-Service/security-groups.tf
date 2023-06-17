@@ -1,5 +1,4 @@
 # Security Group for Web Servers
-# ------------------------------
 resource "aws_security_group" "web-server" {
   name        = "${var.project_name}-sg-web"
   description = "Allows SSH 22 to specific IP, as well as 80, 443, 3000 to all"

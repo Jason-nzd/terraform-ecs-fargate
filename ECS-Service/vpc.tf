@@ -13,7 +13,8 @@ locals {
   vpc-net-cidr = join(".", slice(split(".", var.vpc-full-cidr), 0, 2))
 }
 
-# Deploy multiple /24 public subnets using the 3rd octet starting at 101
+# Public Subnets
+# Deploy multiple /24 subnets using the 3rd octet starting at 101
 # eg. 10.x.101.0/24, 10.x.102.0/24, 10.x.103.0/24
 resource "aws_subnet" "public" {
   vpc_id            = aws_vpc.vpc.id
@@ -37,7 +38,8 @@ data "aws_subnets" "public" {
   }
 }
 
-# Deploy multiple /24 private subnets using the 3rd octet starting at 1
+# Private Subnets
+# Deploy multiple /24 subnets using the 3rd octet starting at 1
 # eg. 10.x.1.0/24, 10.x.2.0/24, 10.x.3.0/24
 resource "aws_subnet" "private" {
   vpc_id            = aws_vpc.vpc.id
@@ -81,6 +83,8 @@ resource "aws_route_table" "rt" {
     Name = "rt-${var.project_name}"
   }
 }
+
+# Route Table Associations
 resource "aws_route_table_association" "public" {
   count          = var.num_subnets
   subnet_id      = aws_subnet.public[count.index].id

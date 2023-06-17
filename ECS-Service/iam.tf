@@ -1,5 +1,4 @@
 # ECS Task Execution Role
-# -----------------------
 resource "aws_iam_role" "ecs-task-execution" {
   name               = "ECS-TaskExecutionRole"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json

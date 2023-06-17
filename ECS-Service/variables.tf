@@ -24,5 +24,18 @@ variable "vpc-full-cidr" {
 variable "num_subnets" {
   description = "Number of subnets to place into each public/private tier"
   type        = number
-  default     = 3
+  default     = 2
+}
+
+variable "container_web_port" {
+  description = "Port of the web-servers running on the containers"
+  # Will be mapped to port 80/443 by the load balancer"
+  type    = number
+  default = 3000
+}
+
+variable "num_container_instances" {
+  description = "Number of container instances to run"
+  type        = number
+  default     = 2
 }
